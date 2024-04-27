@@ -9,7 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_SECRET}@cluster0.bu1vbif.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -25,6 +24,30 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    // Collections in the database
+    const touristSpotCards = client.db('touristSpotsDB').collection('touristSpotCards');
+    const userCollection = client.db('user');
+
+    // // 
+    // app.get('/bannerImg', async(req, res) => {
+    //   const cursor = touristBannerImgCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // })
+
+    // Read the card data from the database
+    app.get('/touristSpotCards', async(req, res) => {
+      const cursor = touristSpotCards.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Create user in the database
+    // app.post('/users', async (req, res) => {
+    //   // const 
+    // });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -38,9 +61,9 @@ run().catch(console.dir);
 
 // Check server side 
 app.get('/', (req, res) => {
-    res.send('Assignment 10 server side is running');
+  res.send('Assignment 10 server side is running');
 });
 
 app.listen(port, () => {
-    console.log(`Assignment server is running on port: ${port}`);
+  console.log(`Assignment server is running on port: ${port}`);
 });
