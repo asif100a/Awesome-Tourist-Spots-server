@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
@@ -36,12 +36,20 @@ async function run() {
     //   res.send(result);
     // })
 
-    // Read the card data from the database
+    // Read all the card data from the database
     app.get('/touristSpotCards', async(req, res) => {
       const cursor = touristSpotCards.find();
       const result = await cursor.toArray();
       res.send(result);
     });
+
+    // Read specifice card data from the database
+    app.get('/touristSpotCards/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await touristSpotCards.findOne(query);
+      res.send(result);
+    }); 
 
     // Create user in the database
     // app.post('/users', async (req, res) => {
@@ -50,7 +58,7 @@ async function run() {
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log("Pinged your deployment. I successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
