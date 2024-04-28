@@ -52,10 +52,18 @@ async function run() {
       res.send(result);
     }); 
 
-    // Read the user tourist spot data from 
+    // Read the user tourist spot data from database
     app.get('/addTouristSpot', async(req, res) => {
       const cursor = addTouristSpot.find();
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Read specific data from database
+    app.get('/addTouristSpot/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await addTouristSpot.findOne(query);
       res.send(result);
     });
 
