@@ -27,7 +27,8 @@ async function run() {
 
     // Collections in the database
     const touristSpotCards = client.db('touristSpotsDB').collection('touristSpotCards');
-    const userCollection = client.db('user');
+    const addTouristSpot = client.db('touristSpotsDB').collection('addTouristSpot');
+    const userCollection = client.db('touristSpotsDB');
 
     // // 
     // app.get('/bannerImg', async(req, res) => {
@@ -50,6 +51,14 @@ async function run() {
       const result = await touristSpotCards.findOne(query);
       res.send(result);
     }); 
+
+    // Add user tourist spot in the database
+    app.post('/addTouristSpot', async(req, res) => {
+      const addTourist = req.body;
+      console.log(addTourist);
+      const result = await addTouristSpot.insertOne(addTourist);
+      res.send(result);
+    });
 
     // Create user in the database
     // app.post('/users', async (req, res) => {
