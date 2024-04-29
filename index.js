@@ -27,8 +27,8 @@ async function run() {
 
     // Collections in the database
     const touristSpotCards = client.db('touristSpotsDB').collection('touristSpotCards');
+    // const userCollection = client.db('touristSpotsDB').collection('touristUser');
     const addTouristSpot = client.db('touristSpotsDB').collection('addTouristSpot');
-    const userCollection = client.db('touristSpotsDB');
 
     // // 
     // app.get('/bannerImg', async(req, res) => {
@@ -59,11 +59,20 @@ async function run() {
       res.send(result);
     });
 
-    // Read specific data from database
+    // Read specific data via _id from database
     app.get('/addTouristSpot/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await addTouristSpot.findOne(query);
+      res.send(result);
+    });
+
+    // Read specific data via email from database
+    app.get('/myTouristSpot/:email', async(req, res) => {
+      const data = req.params;
+      const query = {email: data.email};
+      const uploadedData = addTouristSpot.find(query);
+      const result = await uploadedData.toArray();
       res.send(result);
     });
 
