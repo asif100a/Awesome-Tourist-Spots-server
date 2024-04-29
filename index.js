@@ -38,49 +38,70 @@ async function run() {
     // })
 
     // Read all the card data from the database
-    app.get('/touristSpotCards', async(req, res) => {
+    app.get('/touristSpotCards', async (req, res) => {
       const cursor = touristSpotCards.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
     // Read specifice card data from the database
-    app.get('/touristSpotCards/:id', async(req, res) => {
+    app.get('/touristSpotCards/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await touristSpotCards.findOne(query);
       res.send(result);
-    }); 
+    });
 
     // Read the user tourist spot data from database
-    app.get('/addTouristSpot', async(req, res) => {
+    app.get('/addTouristSpot', async (req, res) => {
       const cursor = addTouristSpot.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
     // Read specific data via _id from database
-    app.get('/addTouristSpot/:id', async(req, res) => {
+    app.get('/addTouristSpot/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await addTouristSpot.findOne(query);
       res.send(result);
     });
 
     // Read specific data via email from database
-    app.get('/myTouristSpot/:email', async(req, res) => {
+    app.get('/myTouristSpot/:email', async (req, res) => {
       const data = req.params;
-      const query = {email: data.email};
+      const query = { email: data.email };
       const uploadedData = addTouristSpot.find(query);
       const result = await uploadedData.toArray();
       res.send(result);
     });
 
     // Add user tourist spot in the database
-    app.post('/addTouristSpot', async(req, res) => {
+    app.post('/addTouristSpot', async (req, res) => {
       const addTourist = req.body;
       console.log(addTourist);
       const result = await addTouristSpot.insertOne(addTourist);
+      res.send(result);
+    });
+
+    // Update tourist spot data in the database
+    app.patch('/addTouristSpot/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = req.body;
+      const doc = {
+        $set: {
+          tourist_spot_name: updatedDoc.tourist_spot_name,
+          img_url: updatedDoc.img_url,
+          location: updatedDoc.location,
+          country: updatedDoc.country,
+          average_cost: updatedDoc.average_cost,
+          total_visitor: updatedDoc.total_visitor,
+          description: updatedDoc.description,
+        }
+      };
+      const result = await addTouristSpot.updateOne(filter, doc);
       res.send(result);
     });
 
