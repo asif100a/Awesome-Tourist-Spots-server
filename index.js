@@ -27,8 +27,8 @@ async function run() {
 
     // Collections in the database
     const touristSpotCards = client.db('touristSpotsDB').collection('touristSpotCards');
-    // const userCollection = client.db('touristSpotsDB').collection('touristUser');
     const addTouristSpot = client.db('touristSpotsDB').collection('addTouristSpot');
+    const countryCards = client.db('touristSpotsDB').collection('countryCards');
 
     // // 
     // app.get('/bannerImg', async(req, res) => {
@@ -113,6 +113,20 @@ async function run() {
       const filter = {_id: new ObjectId(id)};
       const result = await addTouristSpot.deleteOne(filter);
       res.send(result);
+    });
+
+    // Read the country cards from the database
+    app.get('/countryCards', async(req, res) => {
+      const cursor = countryCards.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Read specific tourist cards via county name
+    app.get('/touristSpotCards/', async(req, res) => {
+      // const country = req.params;
+      // console.log(country);
+      // const filter = {country_name: country.}
     });
 
     // Create user in the database
