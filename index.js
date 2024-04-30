@@ -87,7 +87,6 @@ async function run() {
     // Update tourist spot data in the database
     app.patch('/addTouristSpot/:id', async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = req.body;
       const doc = {
@@ -95,13 +94,24 @@ async function run() {
           tourist_spot_name: updatedDoc.tourist_spot_name,
           img_url: updatedDoc.img_url,
           location: updatedDoc.location,
-          country: updatedDoc.country,
+          country_name: updatedDoc.country_name,
           average_cost: updatedDoc.average_cost,
           total_visitor: updatedDoc.total_visitor,
+          season: updatedDoc.season,
+          travel_time: updatedDoc.travel_time,
           description: updatedDoc.description,
         }
       };
       const result = await addTouristSpot.updateOne(filter, doc);
+      res.send(result);
+    });
+
+    // Delete user tourist info from database
+    app.delete('/addTouristSpot/:id', async(req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const filter = {_id: new ObjectId(id)};
+      const result = await addTouristSpot.deleteOne(filter);
       res.send(result);
     });
 
