@@ -23,19 +23,12 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     // Collections in the database
     const touristSpotCards = client.db('touristSpotsDB').collection('touristSpotCards');
     const addTouristSpot = client.db('touristSpotsDB').collection('addTouristSpot');
     const countryCards = client.db('touristSpotsDB').collection('countryCards');
-
-    // // 
-    // app.get('/bannerImg', async(req, res) => {
-    //   const cursor = touristBannerImgCollection.find();
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // })
 
     // Read all the card data from the database
     app.get('/touristSpotCards', async (req, res) => {
@@ -54,9 +47,29 @@ async function run() {
 
     // Read the user tourist spot data from database
     app.get('/addTouristSpot', async (req, res) => {
-      const cursor = addTouristSpot.find();
-      const result = await cursor.toArray();
-      res.send(result);
+      const { sort } = req.query;
+      // console.log(sort);
+      let result;
+
+      // Sort data according to ascending or descending order
+      try {
+        if (sort === 'low' || sort === 'high') {
+          const sortOrder = sort === 'low' ? 1 : -1;
+
+          result = await addTouristSpot.find().sort({average_cost: sortOrder}).toArray();
+          // console.log(result);
+          res.status(200).send(result);
+
+        } else{
+          const cursor = addTouristSpot.find();
+          result = await cursor.toArray();
+          res.send(result);
+        }
+
+      } catch (error) {
+        // console.log(error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
     });
 
     // Read specific data via _id from database
@@ -69,8 +82,9 @@ async function run() {
 
     // Read specific data via email from database
     app.get('/myTouristSpot/:email', async (req, res) => {
-      const data = req.params;
-      const query = { email: data.email };
+      // const data = req.params;
+      // console.log(data)
+      const query = { email: req.params.email };
       const uploadedData = addTouristSpot.find(query);
       const result = await uploadedData.toArray();
       res.send(result);
@@ -79,7 +93,7 @@ async function run() {
     // Add user tourist spot in the database
     app.post('/addTouristSpot', async (req, res) => {
       const addTourist = req.body;
-      console.log(addTourist);
+      // console.log(addTourist);
       const result = await addTouristSpot.insertOne(addTourist);
       res.send(result);
     });
@@ -107,23 +121,23 @@ async function run() {
     });
 
     // Delete user tourist info from database
-    app.delete('/addTouristSpot/:id', async(req, res) => {
+    app.delete('/addTouristSpot/:id', async (req, res) => {
       const id = req.params.id;
-      console.log(id)
-      const filter = {_id: new ObjectId(id)};
+      // console.log(id);
+      const filter = { _id: new ObjectId(id) };
       const result = await addTouristSpot.deleteOne(filter);
       res.send(result);
     });
 
     // Read the country cards from the database
-    app.get('/countryCards', async(req, res) => {
+    app.get('/countryCards', async (req, res) => {
       const cursor = countryCards.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
     // Read specific tourist cards via county name
-    app.get('/touristSpotCards/', async(req, res) => {
+    app.get('/touristSpotCards/', async (req, res) => {
       // const country = req.params;
       // console.log(country);
       // const filter = {country_name: country.}
@@ -135,8 +149,8 @@ async function run() {
     // });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. I successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. I successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
